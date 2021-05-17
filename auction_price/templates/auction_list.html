@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+  <a href="{{url_for('home', delng_de='20200102')}}">{{"20200102"}}</a>
+  <a href="{{url_for('home', delng_de='20200103')}}">{{"20200103"}}</a>
+  total: {{ total }}
+    <table>
+        <thead>
+            <td>경락일자</td>
+            <td>도매시장명</td>
+            <td>단위</td>
+            <td>수량</td>
+            <td>경락가격</td>
+        </thead>
+        <tbody>
+        {% for post in list %}
+        <tr>
+            <td>{{ post.delngDe }}</td>
+            <td>{{ post.whsalMrktNm }}</td>
+            <td>{{ post.stdUnitNewNm }}</td>
+            <td>{{ post.delngQy }}</td>
+            <td>{{ post.sbidPric }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}
