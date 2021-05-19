@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 flask = "*"
 zappa = "*"
+werkzeug = "==0.16.1"
+kappa = "*"
 
 [dev-packages]
 

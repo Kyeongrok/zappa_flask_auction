@@ -6,6 +6,7 @@ import ast, json
 import boto3
 
 app = Flask(__name__)
+t = Table('auction2')
 
 dynamodb = boto3.resource('dynamodb')
 @app.route('/')
@@ -27,3 +28,10 @@ def auction_list():
     total = len(l)
     print(l[0])
     return render_template('auction_list.html', total=total, title='Auction List', list=l)
+
+@app.route('/crawl_result', methods=['GET', 'POST'])
+def crawl_result():
+    # 모든 작물의 crawl결과를 보여준다 paging으로
+    #
+
+    return render_template('crawl_result.html', result = [])
