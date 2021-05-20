@@ -33,12 +33,20 @@ class Table():
         return r
 
     def select_by_pk(self, pk, last_evaluated_key=None):
-        response = self.table.query(
-            KeyConditionExpression=Key('date').eq(pk),
-            Limit=100
-        )
+        if last_evaluated_key == None:
+            response = self.table.query(
+                KeyConditionExpression=Key('date').eq(pk),
+                Limit=100
+            )
+        else:
+            response = self.table.query(
+                KeyConditionExpression=Key('date').eq(pk),
+                ExclusiveStartKey = {'date':pk, 'prdcd_whsal_mrkt_new_cd':last_evaluated_key},
+                Limit=100
+            )
 
         return response
+
 
         # table.meta.client.get_waiter('table_exists').wait(TableName=table_name)
         # print(f'{table_name} has been created')
@@ -52,11 +60,23 @@ class Table():
         print(response)
 
 
-    def select_pk_begins_with(self, date, prd_cd='1202'):
+    def select_pk_begins_with(self, date, begins='1202', limit=100):
         response = self.table.query(
-            KeyConditionExpression = Key('date').eq(date) & Key('prdcd_whsal_mrkt_new_cd').begins_with(f'{prd_cd}#')
+            KeyConditionExpression = Key('date').eq(date) & Key('prdcd_whsal_mrkt_new_cd').begins_with(f'{begins}#'),
+            Limit = limit
         )
-        print(response)
+        return response
+
+    def select_statistic(self, pk):
+        response = self.table.query(
+            KeyConditionExpression = Key('date').eq(pk) & Key('prdcd_whsal_mrkt_new_cd').begins_with('CRAWL#'),
+            FilterExpression = 'total_cnt > :v',
+            ExpressionAttributeValues= {
+                ':v': 0,
+            },
+            Limit=100
+        )
+        return response
 
     def insert_into_db(self, jo, date, prd_cd, rnum):
         # print(jo)
