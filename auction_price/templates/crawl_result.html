@@ -1,9 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
-  <a href="{{url_for('home', delng_de='20200102')}}">{{"20200102"}}</a>
-  <a href="{{url_for('home', delng_de='20200103')}}">{{"20200103"}}</a>
-  total: {{ total }}
-    <table>
+    <form action="{{url_for('crawl_result')}}" method="post">
+        <div class="col-md-2">
+            <input type="text" class="form-control" name="date" value="{{ date }}" id="date" placeholder="기한을 선택해주세요."/>
+            <input type="submit" class="btn btn-primary" value="Next"/>
+            <input type="hidden" name="date" value="{{ date }}" />
+            <input type="hidden" name="last_evaluated_key" value="{{ last_evaluated_key }}" />
+        </div>
+    </form>
+    <table class="table">
         <thead>
             <td>경락일자</td>
             <td>품목코드</td>

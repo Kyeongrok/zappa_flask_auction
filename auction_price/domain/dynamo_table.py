@@ -67,15 +67,27 @@ class Table():
         )
         return response
 
-    def select_statistic(self, pk):
-        response = self.table.query(
-            KeyConditionExpression = Key('date').eq(pk) & Key('prdcd_whsal_mrkt_new_cd').begins_with('CRAWL#'),
-            FilterExpression = 'total_cnt > :v',
-            ExpressionAttributeValues= {
-                ':v': 0,
-            },
-            Limit=100
-        )
+    def select_statistic(self, pk, lek=None):
+        if lek == None:
+            response = self.table.query(
+                KeyConditionExpression = Key('date').eq(pk) & Key('prdcd_whsal_mrkt_new_cd').begins_with('CRAWL#'),
+                FilterExpression = 'total_cnt > :v',
+                ExpressionAttributeValues= {
+                    ':v': 0,
+                },
+                Limit=100
+            )
+        else:
+            response = self.table.query(
+                KeyConditionExpression = Key('date').eq(pk) & Key('prdcd_whsal_mrkt_new_cd').begins_with('CRAWL#'),
+                ExclusiveStartKey = {'date':pk, 'prdcd_whsal_mrkt_new_cd':lek},
+                FilterExpression = 'total_cnt > :v',
+                ExpressionAttributeValues= {
+                    ':v': 0,
+                },
+                Limit=100
+            )
+
         return response
 
     def insert_into_db(self, jo, date, prd_cd, rnum):

@@ -4,11 +4,19 @@ from auction_price.domain.dynamo_table import Table
 from libs.DecimalEncoder import DecimalEncoder
 import ast, json
 import boto3
+from datetime import datetime
 
 app = Flask(__name__)
 t = Table('auction2')
 
 dynamodb = boto3.resource('dynamodb')
+def parse_into_json(r):
+    l = []
+    for i in r['Items']:
+        d = ast.literal_eval((json.dumps(i, cls=DecimalEncoder)))
+        l.append(d)
+    return l
+
 @app.route('/')
 def home():
     return redirect(url_for('auction_list'))
@@ -17,13 +25,22 @@ def home():
 def api():
     return {'hello':'world'}
 
-@app.route('/statistic')
+@app.route('/statistic', methods=['GET', 'POST'])
 def statistic():
-    return render_template('statistic.html')
+    date = datetime.now().strftime("%Y%m%d")
+    if request.method == 'POST':
+        date = request.form['date']
+        lek = request.form['last_evaluated_key']
+
+    r = t.select_statistic(date, lek)
+    l = parse_into_json(r)
+
+    return render_template('statistic.html', date=date, lek=r['LastEvaluatedKey']['prdcd_whsal_mrkt_new_cd'],
+                           items=r['Items'], l = l)
 
 @app.route('/auction_list', methods=['GET', 'POST'])
 def auction_list():
-    date = '20210514'
+    date = datetime.now().strftime("%Y%m%d")
 
     if request.method == 'POST':
         date = request.form['date']
@@ -48,12 +65,17 @@ def auction_list():
 
 @app.route('/crawl_result', methods=['GET', 'POST'])
 def crawl_result():
+    date = datetime.now().strftime("%Y%m%d")
     # 모든 작물의 crawl결과를 보여준다 paging으로
+    if request.method == 'POST':
+        date = request.form['date']
+        lek = request.form['last_evaluated_key']
     # date : default는 오늘이지만 주말, 공휴일이면 가장 빠른 날
-    r = t.select_pk_begins_with('20210517', 'CRAWL')
+    r = t.select_pk_begins_with(date, 'CRAWL')
+    last_evaluated_key = r['LastEvaluatedKey']
     l = []
     for i in r['Items']:
         d = ast.literal_eval((json.dumps(i, cls=DecimalEncoder)))
         l.append(d)
     total = len(l)
-    return render_template('crawl_result.html', result = l, total=total)
+    return render_template('crawl_result.html', result = l, total=total, date=date, last_evaluated_key=last_evaluated_key['prdcd_whsal_mrkt_new_cd'] )
