@@ -79,8 +79,9 @@ def crawl_result():
 
     retry_cnt = 0
     while retry_cnt < 5 and r['Count'] == 0:
-        retry_cnt += 1
-        date = datetime.datetime.now() + datetime.timedelta(days=retry_cnt).strftime("%Y%m%d")
+        retry_cnt -= 1
+        date = datetime.datetime.now() + datetime.timedelta(days=retry_cnt)
+        date = date.strftime("%Y%m%d")
         r = t.select_statistic(date)
 
     if r['Count'] == 0:
