@@ -1,5 +1,7 @@
 import boto3
 from boto3.dynamodb.conditions import Key
+from decimal import Decimal
+from botocore.exceptions import ClientError
 
 class Table():
     def __init__(self, table_name):
@@ -12,9 +14,9 @@ class Table():
         response = self.client.list_tables()
         return response
 
-    def create_table(self, key_schema, attribute_definitions):
+    def create_table(self, table_name, key_schema, attribute_definitions):
         table = self.dynamodb.create_table(
-            TableName = self.table_name,
+            TableName = table_name,
             KeySchema=key_schema,
             AttributeDefinitions=attribute_definitions,
             ProvisionedThroughput={
@@ -23,6 +25,36 @@ class Table():
             }
         )
         print(table)
+
+    def create_table_with_gsi(self, table_name):
+        response = self.dynamodb.create_table(
+            TableName = table_name,
+            KeySchema=[
+                {
+                    'AttributeName': 'prdcd',
+                    'KeyType': 'HASH'
+                },
+                {
+                    'AttributeName': 'prdnm',
+                    'KeyType': 'RANGE'  # Sort key
+                }
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'prdcd',
+                    'AttributeType': 'S'
+                },
+                {
+                    'AttributeName': 'prdnm',
+                    'AttributeType': 'S'
+                }
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 10,
+                'WriteCapacityUnits': 10
+            }
+        )
+        return response
 
     def insert(self, row):
         r = self.table.put_item(Item=row)
@@ -47,9 +79,16 @@ class Table():
 
         return response
 
-
         # table.meta.client.get_waiter('table_exists').wait(TableName=table_name)
-        # print(f'{table_name} has been created')
+
+    def select_by_sk(self, sk, last_evaluated_key=None, limit=100):
+        response = self.table.query(
+            KeyConditionExpression=Key('date').eq(sk),
+            Limit=limit
+        )
+
+        return response
+
     def select_by_sth(self):
         '''
         eq, begins with, between, contains, in,
@@ -64,6 +103,12 @@ class Table():
         response = self.table.query(
             KeyConditionExpression = Key('date').eq(date) & Key('prdcd_whsal_mrkt_new_cd').begins_with(f'{begins}#'),
             Limit = limit
+        )
+        return response
+
+    def select_pk_sk(self, pk, sk):
+        response = self.table.query(
+            KeyConditionExpression = Key('date').eq(pk) & Key('prdcd_whsal_mrkt_new_cd').eq(sk)
         )
         return response
 
@@ -103,3 +148,34 @@ class Table():
             print(e)
             print('error:', date, prd_cd, rnum)
             exit(0)
+
+
+    def update_prdnm(self, pk, sk, prdnm):
+
+            response=self.table.update_item(
+                Key={
+                    'date': pk,
+                    'prdcd_whsal_mrkt_new_cd': sk
+                },
+                UpdateExpression="set prdnm=:n",
+                ExpressionAttributeValues={
+                    ':n': prdnm,
+                },
+                ReturnValues="UPDATED_NEW"
+            )
+            return response
+
+    def delete(self, pk, sk):
+        try:
+            response = self.table.delete_item(
+                Key={
+                    'date': pk,
+                    'prdcd_whsal_mrkt_new_cd': sk
+                }
+            )
+            return response
+        except ClientError as e:
+            if e.response['Error']['Code'] == "ConditionalCheckFailedException":
+                print(e.response['Error']['Message'])
+            else:
+                raise

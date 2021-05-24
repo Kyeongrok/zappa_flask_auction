@@ -3,24 +3,22 @@
     <div class="col-md-6">
         total: {{ total }}
     </div>
-    <div class="col-md-8">
-        last_evaluated_key: {{ last_evaluated_key }}
-    </div>
-    <form action="{{url_for('auction_list')}}" method="get">
-        <div class="col-md-6">
-            <input type="text" class="form-control" name="date" value="{{ date }}" id="date" placeholder="기한을 선택해주세요."/>
-        </div>
-        <div class="col-md-1">
-            <input type="submit" class="btn btn-primary"/>
-        </div>
-    </form>
-    <form action="{{url_for('auction_list')}}" method="post">
-        <div class="col-md-1">
-            <input type="submit" class="btn btn-primary" value="Next"/>
-            <input type="hidden" name="date" value="{{ date }}" />
-            <input type="hidden" name="last_evaluated_key" value="{{ last_evaluated_key }}" />
-        </div>
-    </form>
+     <div class="form-inline form-group" >
+        <form action="{{url_for('auction_list')}}" method="get"> <div class="col-md-6">
+                <input type="text" class="form-control" name="date" value="{{ date }}" id="date" placeholder="기한을 선택해주세요."/>
+            </div>
+            <div class="col-md-1">
+                <input type="submit" class="btn btn-primary" style="display: none"/>
+            </div>
+        </form>
+        <form action="{{url_for('auction_list')}}" method="post">
+            <div class="col-md-1">
+                <input type="submit" class="btn btn-primary" value="Next"/>
+                <input type="hidden" name="date" value="{{ date }}" />
+                <input type="hidden" name="last_evaluated_key" value="{{ last_evaluated_key }}" />
+            </div>
+        </form>
+     </div>
     <table class="table">
         <thead>
             <td>경락일자</td>
