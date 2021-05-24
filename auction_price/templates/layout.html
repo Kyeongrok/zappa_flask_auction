@@ -37,12 +37,11 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="/">Home</a>
-              <a class="nav-item nav-link" href="{{url_for('statistic')}}">Statistic</a>
+              <a class="nav-item nav-link" href="{{url_for('auction_list')}}">Home</a>
+              <a class="nav-item nav-link" href="{{url_for('crawl_result')}}">Statistic</a>
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
-                <a class="nav-item nav-link" href="{{url_for('crawl_result')}}">Crawl Result</a>
                 <a class="nav-item nav-link" href="{{url_for('crawl_result')}}">표준 품목코드 조회</a>
             </div>
           </div>
