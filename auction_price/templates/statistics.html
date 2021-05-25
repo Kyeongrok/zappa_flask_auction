@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <form action="{{url_for('crawl_result')}}" method="post">
+    <form action="{{url_for('statistics')}}" method="post">
         <div class="col-md-2">
             <input type="text" class="form-control" name="date" value="{{ date }}" id="date" placeholder="기한을 선택해주세요."/>
             <input type="submit" class="btn btn-primary" value="Next"/>
@@ -20,10 +20,10 @@
         {% for post in result %}
         <tr>
             <td>{{ post.date }}</td>
-            <td>{{ post.prdcd_whsal_mrkt_new_cd }}</td>
+            <td><a href="{{url_for('auction_list', date=post.date, prd_cd=post.prd_cd)}}">{{ post.prd_cd }}</a></td>
             <td>{{ post.total_cnt }}</td>
-            <td>{{ post.prdnm }}</td>
-            <td>{{ post.sbidPric }}</td>
+            <td>{{ post.prd_nm }}</td>
+            <td>{{ post.prdd }}</td>
         </tr>
         {% endfor %}
         </tbody>

@@ -99,11 +99,19 @@ class Table():
         print(response)
 
 
-    def select_pk_begins_with(self, date, begins='1202', limit=100):
-        response = self.table.query(
-            KeyConditionExpression = Key('date').eq(date) & Key('prdcd_whsal_mrkt_new_cd').begins_with(f'{begins}#'),
-            Limit = limit
-        )
+    def select_pk_begins_with(self, date, begins='1202', lek=None, limit=100):
+        if lek == None:
+            response = self.table.query(
+                KeyConditionExpression = Key('date').eq(date) & Key('prdcd_whsal_mrkt_new_cd').begins_with(f'{begins}#'),
+                Limit = limit
+            )
+        else:
+            response = self.table.query(
+                KeyConditionExpression = Key('date').eq(date) & Key('prdcd_whsal_mrkt_new_cd').begins_with(f'{begins}#'),
+                ExclusiveStartKey = {'date':date, 'prdcd_whsal_mrkt_new_cd':lek},
+                Limit = limit
+            )
+
         return response
 
     def select_pk_sk(self, pk, sk):
@@ -179,3 +187,4 @@ class Table():
                 print(e.response['Error']['Message'])
             else:
                 raise
+

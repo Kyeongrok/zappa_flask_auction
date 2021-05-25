@@ -4,14 +4,14 @@
         total: {{ total }}
     </div>
      <div class="form-inline form-group" >
-        <form action="{{url_for('auction_list')}}" method="get"> <div class="col-md-6">
+        <form action="{{url_for('auction_list', prd_cd=prd_cd)}}" method="get"> <div class="col-md-6">
                 <input type="text" class="form-control" name="date" value="{{ date }}" id="date" placeholder="기한을 선택해주세요."/>
             </div>
             <div class="col-md-1">
                 <input type="submit" class="btn btn-primary" style="display: none"/>
             </div>
         </form>
-        <form action="{{url_for('auction_list')}}" method="post">
+        <form action="{{url_for('auction_list', prd_cd=prd_cd)}}" method="post">
             <div class="col-md-1">
                 <input type="submit" class="btn btn-primary" value="Next"/>
                 <input type="hidden" name="date" value="{{ date }}" />

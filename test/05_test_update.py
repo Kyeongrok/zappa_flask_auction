@@ -23,7 +23,7 @@ if __name__ == '__main__':
     t = Table('auction2')
 
     # 오늘날짜를 select
-    r = t.select_pk_begins_with('20210521', 'CRAWL', limit=2000)
+    r = t.select_pk_begins_with('20210524', 'RAW#1001', limit=2000)
     for item in r['Items']:
         print(item)
 

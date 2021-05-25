@@ -18,40 +18,29 @@ def parse_into_json(r):
 
 @app.route('/')
 def home():
-    return redirect(url_for('auction_list'))
+    return redirect(url_for('statistics'))
 
 @app.route('/api')
 def api():
     return {'hello':'world'}
 
-@app.route('/statistic', methods=['GET', 'POST'])
-def statistic():
-    date = datetime.datetime.now().strftime("%Y%m%d")
-    if request.method == 'POST':
-        date = request.form['date']
-        lek = request.form['last_evaluated_key']
-
-    r = t.select_statistic(date, lek)
-    l = parse_into_json(r)
-
-    return render_template('statistic.html', date=date, lek=r['LastEvaluatedKey']['prdcd_whsal_mrkt_new_cd'],
-                           items=r['Items'], l = l)
 
 @app.route('/auction_list', methods=['GET', 'POST'])
-def auction_list():
+def auction_list(prd_cd=None):
     date = datetime.datetime.now().strftime("%Y%m%d")
 
     if request.method == 'POST':
         date = request.form['date']
         lek = request.form['last_evaluated_key']
-        r = t.select_by_pk(date, lek)
+        r = t.select_pk_begins_with(date, lek)
     else:
         if request.args.get('date') != None and request.args.get('date') != '':
             date = request.args.get('date')
-        r = t.select_by_pk(date)
+        prd_cd = request.args.get('prd_cd')
+        r = t.select_pk_begins_with(date, f'RAW#{prd_cd}')
 
     if r['Count'] == 0:
-        return render_template('auction_list.html', total=0, date=date, title='Auction List')
+        return render_template('auction_list.html', total=0, date=date, prd_cd=prd_cd, title='Auction List')
 
     last_evaluated_key = r['LastEvaluatedKey']
 
@@ -65,8 +54,8 @@ def auction_list():
                            date = date,
                            last_evaluated_key=last_evaluated_key['prdcd_whsal_mrkt_new_cd'],  list=l)
 
-@app.route('/crawl_result', methods=['GET', 'POST'])
-def crawl_result():
+@app.route('/statistics', methods=['GET', 'POST'])
+def statistics():
     date = datetime.datetime.now().strftime("%Y%m%d")
     # 모든 작물의 crawl결과를 보여준다 paging으로
     if request.method == 'POST':
@@ -85,15 +74,18 @@ def crawl_result():
         r = t.select_statistic(date)
 
     if r['Count'] == 0:
-        return render_template('crawl_result.html', result = [], total=0, date=date )
+        return render_template('statistics.html', result = [], total=0, date=date)
 
     last_evaluated_key = r['LastEvaluatedKey']
-    l = []
+    lst = []
     for i in r['Items']:
         d = ast.literal_eval((json.dumps(i, cls=DecimalEncoder)))
-        l.append(d)
-    total = len(l)
-    return render_template('crawl_result.html', result = l, total=total, date=date, last_evaluated_key=last_evaluated_key['prdcd_whsal_mrkt_new_cd'] )
+        d['total_cnt'] = int(d['total_cnt'])
+        d['prd_cd'] = d['prdcd_whsal_mrkt_new_cd'].split('#')[1]
+        lst.append(d)
+    sorted_lst = sorted(lst, key=lambda k: k['total_cnt'], reverse=True)
+    total = len(lst)
+    return render_template('statistics.html', result = sorted_lst, total=total, date=date, last_evaluated_key=last_evaluated_key['prdcd_whsal_mrkt_new_cd'])
 
 @app.route('/std_prdcd_search', methods=['GET', 'POST'])
 def std_prdcd_search():
