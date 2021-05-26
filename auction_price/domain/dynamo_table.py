@@ -107,7 +107,7 @@ class Table():
             )
         else:
             response = self.table.query(
-                KeyConditionExpression = Key('date').eq(date) & Key('prdcd_whsal_mrkt_new_cd').begins_with(f'{begins}#'),
+                KeyConditionExpression = Key('date').eq(date) & Key('prdcd_whsal_mrkt_new_cd').begins_with(f'{begins}'),
                 ExclusiveStartKey = {'date':date, 'prdcd_whsal_mrkt_new_cd':lek},
                 Limit = limit
             )

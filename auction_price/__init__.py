@@ -24,9 +24,8 @@ def home():
 def api():
     return {'hello':'world'}
 
-
-@app.route('/auction_list', methods=['GET', 'POST'])
-def auction_list(prd_cd=None):
+@app.route('/auction_list_api', methods=['GET', 'POST'])
+def auction_list_api():
     date = datetime.datetime.now().strftime("%Y%m%d")
 
     if request.method == 'POST':
@@ -42,6 +41,35 @@ def auction_list(prd_cd=None):
     if r['Count'] == 0:
         return render_template('auction_list.html', total=0, date=date, prd_cd=prd_cd, title='Auction List')
 
+        return {'r':'a'}
+
+
+@app.route('/auction_list', methods=['GET', 'POST'])
+def auction_list():
+    '''
+    :param prd_cd:
+    :return:
+    '''
+    date = datetime.datetime.now().strftime("%Y%m%d")
+
+    if request.method == 'POST':
+        date = request.form['date']
+        lek = request.form['last_evaluated_key']
+        r = t.select_pk_begins_with(date, lek)
+    else:
+        if request.args.get('date') != None and request.args.get('date') != '':
+            date = request.args.get('date')
+        lek = request.args.get('lek')
+        prd_cd = request.args.get('prd_cd')
+        print(lek)
+        if lek != None:
+            r = t.select_pk_begins_with(date, f'RAW#{prd_cd}', lek=lek)
+        else:
+            r = t.select_pk_begins_with(date, f'RAW#{prd_cd}')
+
+    if r['Count'] == 0:
+        return render_template('auction_list.html', total=0, date=date, prd_cd=prd_cd, title='Auction List')
+
     last_evaluated_key = r['LastEvaluatedKey']
 
     l = []
@@ -51,8 +79,8 @@ def auction_list(prd_cd=None):
     total = len(l)
     print(last_evaluated_key, l[0])
     return render_template('auction_list.html', total=total, title='Auction List',
-                           date = date,
-                           last_evaluated_key=last_evaluated_key['prdcd_whsal_mrkt_new_cd'],  list=l)
+                           date = date, prd_cd=prd_cd,
+                           lek=last_evaluated_key['prdcd_whsal_mrkt_new_cd'],  list=l)
 
 @app.route('/statistics', methods=['GET', 'POST'])
 def statistics():

@@ -2,7 +2,7 @@ from auction_price.domain.dynamo_table import Table
 
 if __name__ == '__main__':
     t = Table('auction2')
-    r = t.select_pk_begins_with('2021-05-17', 'CRAWL')
+    r = t.select_pk_begins_with('20210525', 'RAW#1201', lek='RAW#1201#1088')
     for k, v in r.items():
         if k != 'Items':
             print(k)

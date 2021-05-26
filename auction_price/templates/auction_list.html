@@ -1,21 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="col-md-6">
-        total: {{ total }} / 경락일자 : {{ date }}
+        total: {{ total }} / 경락일자 : {{ date }} / lek:{{ lek }}}
     </div>
      <div class="form-inline form-group" >
-        <form action="{{url_for('auction_list', prd_cd=prd_cd)}}" method="get"> <div class="col-md-6">
+        <form action="{{url_for('auction_list')}}" method="get">
+            <div class="col-md-6">
                 <input type="text" class="form-control" name="date" value="{{ date }}" id="date" placeholder="기한을 선택해주세요."/>
             </div>
-            <div class="col-md-1">
-                <input type="submit" class="btn btn-primary" style="display: none"/>
-            </div>
-        </form>
-        <form action="{{url_for('auction_list', prd_cd=prd_cd)}}" method="post">
-            <div class="col-md-1">
+            <div class="col-md-6">
                 <input type="submit" class="btn btn-primary" value="Next"/>
                 <input type="hidden" name="date" value="{{ date }}" />
-                <input type="hidden" name="last_evaluated_key" value="{{ last_evaluated_key }}" />
+                <input type="hidden" name="prd_cd" value="{{ prd_cd }}" />
+                <input type="hidden" name="lek" value="{{ lek }}" />
             </div>
         </form>
      </div>
@@ -25,7 +22,7 @@
             <td>분류명</td>
             <td>품목명</td>
             <td>단위</td>
-            <td>등급stdQlityNewNm</td>
+            <td>등급</td>
             <td>수량delngQy</td>
             <td>delngPrut</td>
             <td>경락가격sbidPric</td>
