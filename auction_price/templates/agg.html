@@ -8,9 +8,6 @@
             <input type="hidden" name="last_evaluated_key" value="{{ last_evaluated_key }}" />
         </div>
     </form>
-    <div class="form-inline form-group" >
-
-    </div>
     <table class="table">
         <thead>
             <td>경락일자</td>
@@ -20,13 +17,10 @@
             <td>경락가격</td>
         </thead>
         <tbody>
-        {% for post in result %}
+        {% for post in r %}
         <tr>
             <td>{{ post.date }}</td>
-            <td><a href="{{url_for('auction_list', date=post.date, prd_cd=post.prd_cd)}}">{{ post.prd_cd }}</a></td>
-            <td>{{ post.total_cnt }}</td>
-            <td>{{ post.prd_nm }}</td>
-            <td>{{ post.prdd }}</td>
+            <td>post</td>
         </tr>
         {% endfor %}
         </tbody>

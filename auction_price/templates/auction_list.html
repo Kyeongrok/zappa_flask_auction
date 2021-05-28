@@ -16,16 +16,41 @@
             </div>
         </form>
      </div>
+    <div class="form-inline form-group" >
+    </div>
+    <div class="form-inline form-group" >
+        <table class="table">
+            <thead>
+            <td>포장단위명</td>
+            <td>cnt</td>
+            <td>단위 sum</td>
+            <td>평균 가격</td>
+            </thead>
+            <tbody>
+                {% for re in agg_result %}
+                <tr>
+                    <td>{{ re }}</td>
+                    <td>{{ agg_result[re].cnt }}</td>
+                    <td>{{ agg_result[re].sum_1prut }}</td>
+                    <td>{{ (agg_result[re].sum_1prut / agg_result[re].cnt)|round }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <table class="table">
         <thead>
             <td>도매시장명</td>
             <td>분류명</td>
             <td>품목명</td>
+            <td>포장상태</td>
             <td>단위</td>
             <td>등급</td>
             <td>수량delngQy</td>
             <td>delngPrut</td>
             <td>경락가격sbidPric</td>
+            <td>stdMgNewCode</td>
+            <td>mean_pric_per_prut</td>
         </thead>
         <tbody>
         {% for post in list %}
@@ -33,11 +58,14 @@
             <td>{{ post.whsalMrktNm }}</td>
             <td>{{ post.stdPrdlstNewNm }}</td>
             <td>{{ post.stdPrdlstNm }}</td>
+            <td>{{ post.stdFrmlcNewNm }}</td>
             <td>{{ post.stdUnitNewNm }}</td>
             <td>{{ post.stdQlityNewNm }}</td>
             <td>{{ post.delngQy }}</td>
             <td>{{ post.delngPrut }}</td>
             <td>{{ post.sbidPric }}</td>
+            <td>{{ post.stdMgNewCode }}</td>
+            <td>{{ post.mean_pric_per_prut }}</td>
         </tr>
         {% endfor %}
         </tbody>

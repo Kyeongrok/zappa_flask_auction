@@ -7,7 +7,7 @@ def read_csv_file_into_list(filename, delimiter=',', encoding='utf-8'):
         ll = csv.reader(f, delimiter=delimiter)
         return list(ll)
 
-def f():
+def f_prdcd_update():
     with open('std_prd_cd.json') as f:
         m = json.loads(f.read())
 
@@ -19,14 +19,15 @@ def f():
         ur = t.update_prdnm(item['date'], item['prdcd_whsal_mrkt_new_cd'], m[prdcd])
         print(ur)
 
-if __name__ == '__main__':
-    t = Table('auction2')
-
-    # 오늘날짜를 select
-    r = t.select_pk_begins_with('20210524', 'RAW#1001', limit=2000)
+def mean_price_update(date, prdcd):
+    r = t.select_pk_begins_with(date, f'RAW#{prdcd}', limit=2000)
     for item in r['Items']:
         print(item)
 
+if __name__ == '__main__':
+    t = Table('auction2')
+
+    mean_price_update('20210526', '1008')
 
 
 
