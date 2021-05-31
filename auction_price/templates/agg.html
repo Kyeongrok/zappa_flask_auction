@@ -1,28 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
-    <form action="{{url_for('statistics')}}" method="post">
-        <div class="col-md-2">
-            <input type="text" class="form-control" name="date" value="{{ date }}" id="date" placeholder="기한을 선택해주세요."/>
-            <input type="submit" class="btn btn-primary" value="Next"/>
-            <input type="hidden" name="date" value="{{ date }}" />
-            <input type="hidden" name="last_evaluated_key" value="{{ last_evaluated_key }}" />
-        </div>
-    </form>
-    <table class="table">
-        <thead>
-            <td>경락일자</td>
-            <td>품목코드</td>
-            <td>거래 건수</td>
-            <td>품목명</td>
-            <td>경락가격</td>
-        </thead>
-        <tbody>
-        {% for post in r %}
-        <tr>
-            <td>{{ post.date }}</td>
-            <td>post</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="form-inline form-group" >
+        {{prd_nm}}
+    </div>
+    <div class="form-inline form-group" >
+        <table class="table">
+            <thead>
+            <td>포장단위명</td>
+            <td>cnt</td>
+            <td>단위 sum</td>
+            <td>평균 가격</td>
+            </thead>
+            <tbody>
+            {% for re in agg_result %}
+            <tr>
+                <td>{{ re }}</td>
+                <td>{{ agg_result[re].cnt }}</td>
+                <td>{{ agg_result[re].sum_1prut }}</td>
+                <td>{{ (agg_result[re].sum_1prut / agg_result[re].cnt)|round }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="form-inline form-group" >
+        <a href="{{url_for('auction_list', date=date, prd_cd=prd_cd)}}">{{ prd_nm }}</a>
+    </div>
 {% endblock content %}

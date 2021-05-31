@@ -18,26 +18,6 @@
      </div>
     <div class="form-inline form-group" >
     </div>
-    <div class="form-inline form-group" >
-        <table class="table">
-            <thead>
-            <td>포장단위명</td>
-            <td>cnt</td>
-            <td>단위 sum</td>
-            <td>평균 가격</td>
-            </thead>
-            <tbody>
-                {% for re in agg_result %}
-                <tr>
-                    <td>{{ re }}</td>
-                    <td>{{ agg_result[re].cnt }}</td>
-                    <td>{{ agg_result[re].sum_1prut }}</td>
-                    <td>{{ (agg_result[re].sum_1prut / agg_result[re].cnt)|round }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
     <table class="table">
         <thead>
             <td>도매시장명</td>

@@ -50,9 +50,16 @@ def aggr():
     if request.args.get('date') != None and request.args.get('date') != '':
         date = request.args.get('date')
     prd_cd = request.args.get('prd_cd')
-    r = agg(date, prd_cd)
+    agg_result = t.select_pk_begins_with(date, f'CRAWL#{prd_cd}')
+    # print(last_evaluated_key, l[0])
+    prd_nm = agg_result.get('Items')[0]['prd_nm']
+    agg_result = agg_result.get('Items')[0]['agg']
 
-    return render_template('agg.html', total=0, r=r, prd_cd=prd_cd)
+    return render_template('agg.html', total=0,
+                           agg_result = agg_result,
+                           date=date,
+                           prd_nm = prd_nm,
+                           prd_cd=prd_cd)
 
 
 @app.route('/auction_list', methods=['GET', 'POST'])
@@ -77,22 +84,24 @@ def auction_list():
         else:
             r = t.select_pk_begins_with(date, f'RAW#{prd_cd}')
 
-    if r['Count'] == 0:
-        return render_template('auction_list.html', total=0, date=date, prd_cd=prd_cd, title='Auction List')
+    # if r['Count'] == 0:
+    #     return render_template('auction_list.html', total=0, date=date, prd_cd=prd_cd, title='Auction List')
 
-    last_evaluated_key = r['LastEvaluatedKey']
+    last_evaluated_key = r.get('LastEvaluatedKey')
+    if last_evaluated_key != None:
+        lek = last_evaluated_key['prdcd_whsal_mrkt_new_cd']
 
     l = []
     for i in r['Items']:
         d = ast.literal_eval((json.dumps(i, cls=DecimalEncoder)))
         l.append(d['data1'])
     total = len(l)
-    agg_result = agg(date, prd_cd)
+    agg_result = t.select_pk_begins_with(date, f'CRAWL#{prd_cd}', lek=lek)
     # print(last_evaluated_key, l[0])
+
     return render_template('auction_list.html', total=total, title='Auction List',
-                           date = date, prd_cd=prd_cd,
-                           agg_result = agg_result,
-                           lek=last_evaluated_key['prdcd_whsal_mrkt_new_cd'],  list=l)
+                           date = date, prd_cd=prd_cd, prd_nm= '',
+                           lek=lek,  list=l)
 
 @app.route('/statistics', methods=['GET', 'POST'])
 def statistics():
@@ -125,10 +134,17 @@ def statistics():
         d = ast.literal_eval((json.dumps(i, cls=DecimalEncoder)))
         d['total_cnt'] = int(d['total_cnt'])
         d['prd_cd'] = d['prdcd_whsal_mrkt_new_cd'].split('#')[1]
+        if i['agg'].get('상자') != None:
+            d['mean_price'] = round(i['agg']['상자']['sum_1prut'] / i['agg']['상자']['cnt'], 0)
+        elif i['agg'].get('기타') != None:
+            d['mean_price'] = round(i['agg']['기타']['sum_1prut'] / i['agg']['기타']['cnt'], 0)
+        else:
+            d['mean_price'] = 0
         lst.append(d)
     sorted_lst = sorted(lst, key=lambda k: k['total_cnt'], reverse=True)
     total = len(lst)
-    return render_template('statistics.html', result = sorted_lst, total=total, date=date, last_evaluated_key=lek)
+    return render_template('statistics.html', result = sorted_lst,
+                           total=total, date=date, last_evaluated_key=lek)
 
 @app.route('/std_prdcd_search', methods=['GET', 'POST'])
 def std_prdcd_search():
