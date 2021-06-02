@@ -4,19 +4,18 @@ body {
   margin-top: 5rem;
 }
 table {
-  border-width: 1px;
-  border-style: solid;
-  border-color: #428bca;
+  /*border-width: 1px;*/
+  /*border-style: solid;*/
+  /*border-color: #428bca;*/
+}
+th {
 }
 tr {
-  border-width: 1px;
-  border-style: solid;
-  border-color: #428bca;
+  /*border-width: 1px;*/
+  /*border-style: solid;*/
+  /*border-color: #428bca;*/
 }
 td {
-  border-width: 1px;
-  border-style: solid;
-  border-color: #428bca;
 }
 
 h1, h2, h3, h4, h5, h6 {
