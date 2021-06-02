@@ -31,6 +31,10 @@ def auction_list_api():
     date = datetime.datetime.now().strftime("%Y%m%d")
     # 모든 작물의 crawl결과를 보여준다 paging으로
     # date : default는 오늘이지만 주말, 공휴일이면 가장 빠른 날
+    if request.args.get('date') != None and request.args.get('date') != '':
+        date = request.args.get('date')
+    print(date)
+
     r = t.select_statistic(date, limit=100)
 
     retry_cnt = 0
@@ -125,14 +129,11 @@ def auction_list():
 def statistics():
     date = datetime.datetime.now().strftime("%Y%m%d")
     # 모든 작물의 crawl결과를 보여준다 paging으로
-    if request.method == 'POST':
-        date = request.form['date']
-        lek = request.form['last_evaluated_key']
-
-        pass
-    # date : default는 오늘이지만 주말, 공휴일이면 가장 빠른 날
+    if request.args.get('date') != None and request.args.get('date') != '':
+        date = request.args.get('date')
     r = t.select_statistic(date)
 
+    # date : default는 오늘이지만 주말, 공휴일이면 가장 빠른 날
     retry_cnt = 0
     while retry_cnt < 5 and r['Count'] == 0:
         retry_cnt -= 1
@@ -161,8 +162,7 @@ def statistics():
         lst.append(d)
     sorted_lst = sorted(lst, key=lambda k: k['total_cnt'], reverse=True)
     total = len(lst)
-    return render_template('statistics.html', result = sorted_lst,
-                           total=total, date=date, last_evaluated_key=lek)
+    return render_template('statistics.html', total=total, date=date, last_evaluated_key=lek)
 
 @app.route('/std_prdcd_search', methods=['GET', 'POST'])
 def std_prdcd_search():

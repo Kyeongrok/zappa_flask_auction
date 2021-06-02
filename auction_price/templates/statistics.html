@@ -23,7 +23,7 @@
                 <template id="row_template">
                     <tr>
                         <td id="delng_de"></td>
-                        <td id="prd_cd"></td>
+                        <td><a id="prd_cd"></a></td>
                         <td id="total_cnt"></td>
                         <td id="prd_nm"></td>
                         <td id="mean_price"></td>
@@ -36,33 +36,32 @@
     <div class="form-inline form-group" id="sentinel">
     </div>
     <script>
-        $(document).ready(function(){
-            $("#date").datepicker({format: "yyyymmdd", autoclose : true});
-
-        }).on("changeDate", function(e) {
-            console.log(e)
-        });
         const template = document.querySelector('#row_template')
         const delngDe = document.querySelector('#date')
         const scroller = document.querySelector('#scroller')
         const sentinel = document.querySelector('#sentinel')
         let lek = ''
-
+        let url_prefix = ''
 
         const aa = () =>{
-            let end_point = `/api/statistics?date=${delngDe.value}&lek=${lek}`
             if (document.location.hostname != 'localhost'){
-                end_point = '/dev' + end_point
+                url_prefix = '/dev'
             } else {
                 document.write('nelloo')
             }
+            let end_point = `${url_prefix}/api/statistics?date=${delngDe.value}&lek=${lek}`
+            console.log('ep', end_point)
             fetch(end_point).then(res=>{
+
                 res.json().then(data=>{
+                    console.log('fetch_response', data)
                     lek = data.lek
                     data.data.forEach(item=>{
+                        let prdcd = item['prdcd_whsal_mrkt_new_cd'].replace('CRAWL#', '')
                         let template_clone = template.content.cloneNode(true)
                         template_clone.querySelector('#delng_de').innerHTML = item['date']
-                        template_clone.querySelector('#prd_cd').innerHTML = item['prdcd_whsal_mrkt_new_cd'].replace('CRAWL#', '')
+                        template_clone.querySelector('#prd_cd').innerHTML = prdcd
+                        template_clone.querySelector('#prd_cd').href = `${url_prefix}/aggr?date=${item['date']}&prd_cd=${prdcd}`
                         template_clone.querySelector('#total_cnt').innerHTML = item['total_cnt']
                         template_clone.querySelector('#prd_nm').innerHTML = item['prd_nm']
                         template_clone.querySelector('#mean_price').innerHTML = item['mean_price']
@@ -73,11 +72,23 @@
                 })
             })
         }
+
+        $(document).ready(function(){
+            $("#date").datepicker({format: "yyyymmdd", autoclose : true});
+
+        }).on("changeDate", function(e) {
+            console.log(e.target.value)
+            lek = ''
+            // aa()
+            window.location.replace(`${url_prefix}/statistics?date=${e.target.value}`)
+        });
+
         const intersectionObserver = new IntersectionObserver(entries => {
             if (entries[0].intersectionRatio <= 0){
                 return;
+            }else{
+                console.log(lek)
             }
-            console.log(lek)
         })
         intersectionObserver.observe(sentinel)
         aa()
