@@ -120,7 +120,7 @@ class Table():
         )
         return response
 
-    def select_statistic(self, pk, lek=None):
+    def select_statistic(self, pk, lek=None, limit=100):
         if lek == None:
             response = self.table.query(
                 KeyConditionExpression = Key('date').eq(pk) & Key('prdcd_whsal_mrkt_new_cd').begins_with('CRAWL#'),
@@ -128,7 +128,7 @@ class Table():
                 ExpressionAttributeValues= {
                     ':v': 0,
                 },
-                Limit=100
+                Limit=limit
             )
         else:
             response = self.table.query(

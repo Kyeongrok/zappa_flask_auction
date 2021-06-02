@@ -30,13 +30,8 @@ def auction_list_api():
 
     date = datetime.datetime.now().strftime("%Y%m%d")
     # 모든 작물의 crawl결과를 보여준다 paging으로
-    if request.method == 'POST':
-        date = request.form['date']
-        lek = request.form['last_evaluated_key']
-
-        pass
     # date : default는 오늘이지만 주말, 공휴일이면 가장 빠른 날
-    r = t.select_statistic(date)
+    r = t.select_statistic(date, limit=100)
 
     retry_cnt = 0
     while retry_cnt < 5 and r['Count'] == 0:
@@ -64,7 +59,7 @@ def auction_list_api():
     sorted_lst = sorted(lst, key=lambda k: k['total_cnt'], reverse=True)
 
     total = len(lst)
-    return make_response(json.dumps(sorted_lst, cls=DecimalEncoder))
+    return make_response(json.dumps({'data':sorted_lst, 'lek':lek}, cls=DecimalEncoder))
 
 
 @app.route('/aggr', methods=['GET', 'POST'])

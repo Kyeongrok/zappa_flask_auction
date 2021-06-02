@@ -43,13 +43,23 @@
             console.log(e)
         });
         const template = document.querySelector('#row_template')
+        const delngDe = document.querySelector('#date')
         const scroller = document.querySelector('#scroller')
         const sentinel = document.querySelector('#sentinel')
+        let lek = ''
+
 
         const aa = () =>{
-            fetch('/api/statistics').then(res=>{
+            let end_point = `/api/statistics?date=${delngDe.value}&lek=${lek}`
+            if (document.location.hostname != 'localhost'){
+                end_point = '/dev' + end_point
+            } else {
+                document.write('nelloo')
+            }
+            fetch(end_point).then(res=>{
                 res.json().then(data=>{
-                    data.forEach(item=>{
+                    lek = data.lek
+                    data.data.forEach(item=>{
                         let template_clone = template.content.cloneNode(true)
                         template_clone.querySelector('#delng_de').innerHTML = item['date']
                         template_clone.querySelector('#prd_cd').innerHTML = item['prdcd_whsal_mrkt_new_cd'].replace('CRAWL#', '')
@@ -64,7 +74,10 @@
             })
         }
         const intersectionObserver = new IntersectionObserver(entries => {
-            console.log('ioioioio')
+            if (entries[0].intersectionRatio <= 0){
+                return;
+            }
+            console.log(lek)
         })
         intersectionObserver.observe(sentinel)
         aa()
